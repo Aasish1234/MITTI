@@ -559,7 +559,6 @@ body::before {
     align-self: flex-end;
     border-bottom-right-radius: 2px;
 }
-
 .message.model {
     background: rgba(255,255,255,0.05);
     color: white;
@@ -567,6 +566,17 @@ body::before {
     border-bottom-left-radius: 2px;
 }
 
+.message.system {
+    background: transparent;
+    color: var(--text-soft);
+    font-size: 12px;
+    align-self: center;
+    border-radius: 0;
+    max-width: 100%;
+    text-align: center;
+    opacity: 0.7;
+    font-style: italic;
+}
 .chat-input-area {
     padding: 15px;
     display: flex;

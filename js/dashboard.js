@@ -1,3 +1,5 @@
+import { Conversation } from "https://esm.sh/@elevenlabs/client";
+
 function toggleSidebar() {
     document.getElementById("sidebar").classList.toggle("collapsed");
 }
@@ -204,6 +206,9 @@ function showCropDetails(cropName) {
 
 let recognition = null;
 let isVoiceListening = false;
+let activeConversation = null;
+let isElevenLabsActive = false;
+let isMicMuted = false;
 
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -238,15 +243,120 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     };
 }
 
-function toggleVoiceListening() {
-    if (!recognition) {
-        alert("Browser does not support Speech Recognition.");
-        return;
+const agriculturalKeywords = [
+    "farming", "farm", "crop", "seed", "soil", "nutrient", "npk", "fertilizer", "pest", "remedy",
+    "disease", "mulch", "water", "irrigation", "organic", "natural", "jeevamrutha", "beejamrutha",
+    "neem", "mildew", "blight", "rust", "weather", "rain", "climate", "temperature", "subsidy",
+    "subsidies", "pkvy", "pm-kisan", "government", "finance", "price", "market", "rate", "cost",
+    "rupees", "rice", "wheat", "turmeric", "ragi", "maize", "chili", "cotton", "marigold", "cowpea",
+    "companion", "planting", "agriculture", "cultivation", "harvest", "yield", "compost", "manure",
+    "insect", "spray", "fungicide", "pkvy", "kisan"
+];
+
+function checkGuardRail(query) {
+    const lowercase = query.toLowerCase().trim();
+    if (!lowercase) return false;
+    
+    const allowedPhrases = [
+        "hello", "hi", "namaste", "hey", "good morning", "good afternoon", "good evening",
+        "who are you", "what is your name", "what can you do", "help me"
+    ];
+    if (allowedPhrases.some(phrase => lowercase === phrase || lowercase.startsWith(phrase + " "))) {
+        return true;
     }
-    if (isVoiceListening) {
-        stopVoiceRecognition();
+    
+    return agriculturalKeywords.some(keyword => lowercase.includes(keyword));
+}
+
+async function startElevenLabsSession() {
+    try {
+        updateVoiceIndicator("connecting");
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+        
+        activeConversation = await Conversation.startSession({
+            agentId: "agent_2801kjjj03nmex8amm2bpyx19fqz",
+            onConnect: ({ conversationId }) => {
+                console.log("Connected to ElevenLabs:", conversationId);
+                isElevenLabsActive = true;
+                isMicMuted = false;
+                updateVoiceIndicator("connected");
+                appendMessage("Connected to ElevenLabs Voice Agent.", "system");
+            },
+            onDisconnect: () => {
+                console.log("Disconnected from ElevenLabs");
+                isElevenLabsActive = false;
+                activeConversation = null;
+                updateVoiceIndicator("disconnected");
+                appendMessage("Disconnected from ElevenLabs Voice Agent.", "system");
+            },
+            onMessage: ({ message, source }) => {
+                console.log(`Message from ${source}: ${message}`);
+                appendMessage(message, source === "user" ? "user" : "model");
+            },
+            onError: (error) => {
+                console.error("ElevenLabs error:", error);
+                fallbackToLocalAssistant();
+            }
+        });
+    } catch (err) {
+        console.error("Failed to start ElevenLabs session:", err);
+        fallbackToLocalAssistant();
+    }
+}
+
+function fallbackToLocalAssistant() {
+    isElevenLabsActive = false;
+    activeConversation = null;
+    updateVoiceIndicator("local");
+    appendMessage("Using Local Assistant fallback (offline mode).", "system");
+    speakAssistantResponse("Namaste! I am Mitti, your natural farming assistant. How can I help you?");
+}
+
+function updateVoiceIndicator(status) {
+    const indicator = document.getElementById("voiceIndicator");
+    const micBtn = document.getElementById("micBtn");
+    if (!indicator) return;
+    
+    if (status === "connecting") {
+        indicator.style.background = "#FFC107";
+        indicator.style.display = "inline-block";
+        if (micBtn) micBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    } else if (status === "connected") {
+        indicator.style.background = "#FF5252";
+        indicator.style.display = "inline-block";
+        if (micBtn) micBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+    } else if (status === "disconnected") {
+        indicator.style.background = "#9E9E9E";
+        indicator.style.display = "inline-block";
+        if (micBtn) micBtn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
+    } else if (status === "local") {
+        indicator.style.background = "#4CAF50";
+        indicator.style.display = "inline-block";
+        if (micBtn) micBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+    }
+}
+
+function toggleVoiceListening() {
+    if (isElevenLabsActive && activeConversation) {
+        isMicMuted = !isMicMuted;
+        activeConversation.setMicMuted(isMicMuted);
+        const micBtn = document.getElementById("micBtn");
+        if (micBtn) {
+            micBtn.innerHTML = isMicMuted ? 
+                '<i class="fa-solid fa-microphone-slash"></i>' : 
+                '<i class="fa-solid fa-microphone"></i>';
+        }
+        appendMessage(isMicMuted ? "Microphone muted." : "Microphone unmuted.", "system");
     } else {
-        startVoiceRecognition();
+        if (!recognition) {
+            alert("Browser does not support Speech Recognition.");
+            return;
+        }
+        if (isVoiceListening) {
+            stopVoiceRecognition();
+        } else {
+            startVoiceRecognition();
+        }
     }
 }
 
@@ -271,14 +381,21 @@ function stopVoiceRecognition() {
     }
 }
 
-function toggleChatWindow() {
+async function toggleChatWindow() {
     const win = document.getElementById("chatWindow");
     if (win.style.display === "flex") {
         win.style.display = "none";
+        if (isElevenLabsActive && activeConversation) {
+            try {
+                await activeConversation.endSession();
+            } catch (e) {
+                console.error(e);
+            }
+        }
         stopVoiceRecognition();
     } else {
         win.style.display = "flex";
-        speakAssistantResponse("Hello, I am Mitti, your natural farming assistant. How can I help you transition to organic agriculture today?");
+        await startElevenLabsSession();
     }
 }
 
@@ -299,7 +416,7 @@ const voiceKnowledgeBase = [
     },
     {
         keywords: ["cropping", "multilevel", "rotation", "layer", "stack", "companion", "maize", "chili", "ragi"],
-        reply: "Multilevel cropping layers plants by root depth and height. You stack Canopy coconut trees, Understory banana plants, middle pepper bushes, ground legumes, and rhizome ginger together. This controls weeds, binds soil nitrogen, and multiplies your income."
+        reply: "Multilevel cropping layers plants by root depth and height. You stack Canopy coconut trees, Understory banana plants, middle pepper bushes, ground legumes, and rhizosphere ginger together. This controls weeds, binds soil nitrogen, and multiplies your income."
     },
     {
         keywords: ["price", "market", "rate", "cost", "basmati", "wheat", "turmeric"],
@@ -316,24 +433,40 @@ function sendChatMessage() {
     const query = input.value.trim();
     if (!query) return;
 
+    if (!checkGuardRail(query)) {
+        appendMessage(query, "user");
+        input.value = "";
+        
+        const guardRailReply = "I can only help you with natural farming, organic remedies, companion planting, weather, market rates, and government subsidies. Please ask an agriculture-related question!";
+        setTimeout(() => {
+            appendMessage(guardRailReply, "model");
+            speakAssistantResponse(guardRailReply);
+        }, 500);
+        return;
+    }
+
     appendMessage(query, "user");
     input.value = "";
 
-    let matchReply = "I understand you are asking about agriculture. In natural farming, we recommend biological inputs like Jeevamrutha and cover cropping. Ask me about subsidies, organic remedies, weather, market rates, or five-layer cropping for specific details!";
-    
-    const lowercaseQuery = query.toLowerCase();
-    for (const kb of voiceKnowledgeBase) {
-        const matched = kb.keywords.some(k => lowercaseQuery.includes(k));
-        if (matched) {
-            matchReply = kb.reply;
-            break;
+    if (isElevenLabsActive && activeConversation) {
+        activeConversation.sendText(query);
+    } else {
+        let matchReply = "I understand you are asking about agriculture. In natural farming, we recommend biological inputs like Jeevamrutha and cover cropping. Ask me about subsidies, organic remedies, weather, market rates, or five-layer cropping for specific details!";
+        
+        const lowercaseQuery = query.toLowerCase();
+        for (const kb of voiceKnowledgeBase) {
+            const matched = kb.keywords.some(k => lowercaseQuery.includes(k));
+            if (matched) {
+                matchReply = kb.reply;
+                break;
+            }
         }
-    }
 
-    setTimeout(() => {
-        appendMessage(matchReply, "model");
-        speakAssistantResponse(matchReply);
-    }, 600);
+        setTimeout(() => {
+            appendMessage(matchReply, "model");
+            speakAssistantResponse(matchReply);
+        }, 600);
+    }
 }
 
 function appendMessage(text, sender) {
@@ -364,3 +497,14 @@ function speakAssistantResponse(text) {
         window.speechSynthesis.speak(utterance);
     }
 }
+
+// Bind to window object for inline HTML event handlers
+window.toggleSidebar = toggleSidebar;
+window.toggleTheme = toggleTheme;
+window.changeLanguage = changeLanguage;
+window.checkSoil = checkSoil;
+window.showCropDetails = showCropDetails;
+window.toggleChatWindow = toggleChatWindow;
+window.toggleVoiceListening = toggleVoiceListening;
+window.sendChatMessage = sendChatMessage;
+window.handleChatInput = handleChatInput;
