@@ -1,5 +1,12 @@
 import { Conversation } from "https://esm.sh/@elevenlabs/client";
 
+let recognition = null;
+let isVoiceListening = false;
+let activeConversation = null;
+let isElevenLabsActive = false;
+let isMicMuted = false;
+
+
 function toggleSidebar() {
     document.getElementById("sidebar").classList.toggle("collapsed");
 }
@@ -32,6 +39,24 @@ window.addEventListener("DOMContentLoaded", () => {
     const select = document.getElementById("languageSelect");
     if (select) {
         select.value = savedLang;
+    }
+
+    const chatInput = document.getElementById("chatInput");
+    if (chatInput) {
+        chatInput.addEventListener("input", () => {
+            if (chatInput.value.trim() !== "") {
+                if (isElevenLabsActive && activeConversation) {
+                    activeConversation.setVolume(0);
+                }
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                }
+            } else {
+                if (isElevenLabsActive && activeConversation) {
+                    activeConversation.setVolume(1.0);
+                }
+            }
+        });
     }
 });
 
@@ -204,11 +229,7 @@ function showCropDetails(cropName) {
     detailsBox.scrollIntoView({ behavior: "smooth" });
 }
 
-let recognition = null;
-let isVoiceListening = false;
-let activeConversation = null;
-let isElevenLabsActive = false;
-let isMicMuted = false;
+
 
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -278,9 +299,13 @@ async function startElevenLabsSession() {
             onConnect: ({ conversationId }) => {
                 console.log("Connected to ElevenLabs:", conversationId);
                 isElevenLabsActive = true;
-                isMicMuted = false;
-                updateVoiceIndicator("connected");
-                appendMessage("Connected to ElevenLabs Voice Agent.", "system");
+                
+                isMicMuted = true;
+                activeConversation.setMicMuted(true);
+                activeConversation.setVolume(1.0);
+                
+                updateVoiceIndicator("connected_standby");
+                appendMessage("Connected to ElevenLabs. Click microphone to speak.", "system");
             },
             onDisconnect: () => {
                 console.log("Disconnected from ElevenLabs");
@@ -291,6 +316,14 @@ async function startElevenLabsSession() {
             },
             onMessage: ({ message, source }) => {
                 console.log(`Message from ${source}: ${message}`);
+                
+                if (source === "ai") {
+                    activeConversation.setVolume(1.0);
+                    isMicMuted = true;
+                    activeConversation.setMicMuted(true);
+                    updateVoiceIndicator("connected_standby");
+                }
+                
                 appendMessage(message, source === "user" ? "user" : "model");
             },
             onError: (error) => {
@@ -307,7 +340,7 @@ async function startElevenLabsSession() {
 function fallbackToLocalAssistant() {
     isElevenLabsActive = false;
     activeConversation = null;
-    updateVoiceIndicator("local");
+    updateVoiceIndicator("local_standby");
     appendMessage("Using Local Assistant fallback (offline mode).", "system");
     speakAssistantResponse("Namaste! I am Mitti, your natural farming assistant. How can I help you?");
 }
@@ -321,15 +354,23 @@ function updateVoiceIndicator(status) {
         indicator.style.background = "#FFC107";
         indicator.style.display = "inline-block";
         if (micBtn) micBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-    } else if (status === "connected") {
+    } else if (status === "connected_live") {
         indicator.style.background = "#FF5252";
         indicator.style.display = "inline-block";
         if (micBtn) micBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+    } else if (status === "connected_standby") {
+        indicator.style.background = "#4CAF50";
+        indicator.style.display = "inline-block";
+        if (micBtn) micBtn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
     } else if (status === "disconnected") {
         indicator.style.background = "#9E9E9E";
         indicator.style.display = "inline-block";
         if (micBtn) micBtn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
-    } else if (status === "local") {
+    } else if (status === "local_live") {
+        indicator.style.background = "#FF5252";
+        indicator.style.display = "inline-block";
+        if (micBtn) micBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+    } else if (status === "local_standby") {
         indicator.style.background = "#4CAF50";
         indicator.style.display = "inline-block";
         if (micBtn) micBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
@@ -340,13 +381,16 @@ function toggleVoiceListening() {
     if (isElevenLabsActive && activeConversation) {
         isMicMuted = !isMicMuted;
         activeConversation.setMicMuted(isMicMuted);
-        const micBtn = document.getElementById("micBtn");
-        if (micBtn) {
-            micBtn.innerHTML = isMicMuted ? 
-                '<i class="fa-solid fa-microphone-slash"></i>' : 
-                '<i class="fa-solid fa-microphone"></i>';
+        
+        if (!isMicMuted) {
+            activeConversation.setVolume(0);
+            updateVoiceIndicator("connected_live");
+        } else {
+            activeConversation.setVolume(1.0);
+            updateVoiceIndicator("connected_standby");
         }
-        appendMessage(isMicMuted ? "Microphone muted." : "Microphone unmuted.", "system");
+        
+        appendMessage(isMicMuted ? "Microphone muted." : "Microphone active. Speak now.", "system");
     } else {
         if (!recognition) {
             alert("Browser does not support Speech Recognition.");
@@ -355,6 +399,9 @@ function toggleVoiceListening() {
         if (isVoiceListening) {
             stopVoiceRecognition();
         } else {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
             startVoiceRecognition();
         }
     }
@@ -369,6 +416,7 @@ function startVoiceRecognition() {
         else if (selectedLang === "kn") recognition.lang = "kn-IN";
         else recognition.lang = "en-US";
         
+        updateVoiceIndicator("local_live");
         recognition.start();
     } catch (e) {
         console.error(e);
@@ -378,6 +426,7 @@ function startVoiceRecognition() {
 function stopVoiceRecognition() {
     if (recognition) {
         recognition.stop();
+        updateVoiceIndicator("local_standby");
     }
 }
 
@@ -449,7 +498,8 @@ function sendChatMessage() {
     input.value = "";
 
     if (isElevenLabsActive && activeConversation) {
-        activeConversation.sendText(query);
+        activeConversation.setVolume(1.0);
+        activeConversation.sendUserMessage(query);
     } else {
         let matchReply = "I understand you are asking about agriculture. In natural farming, we recommend biological inputs like Jeevamrutha and cover cropping. Ask me about subsidies, organic remedies, weather, market rates, or five-layer cropping for specific details!";
         
