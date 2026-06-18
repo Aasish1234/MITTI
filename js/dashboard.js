@@ -5,6 +5,8 @@ let isVoiceListening = false;
 let activeConversation = null;
 let isElevenLabsActive = false;
 let isMicMuted = false;
+let isLocalFallbackActive = false;
+
 
 
 function toggleSidebar() {
@@ -291,6 +293,7 @@ function checkGuardRail(query) {
 
 async function startElevenLabsSession() {
     try {
+        isLocalFallbackActive = false;
         updateVoiceIndicator("connecting");
         await navigator.mediaDevices.getUserMedia({ audio: true });
         
@@ -309,10 +312,13 @@ async function startElevenLabsSession() {
             },
             onDisconnect: () => {
                 console.log("Disconnected from ElevenLabs");
+                const wasActive = isElevenLabsActive;
                 isElevenLabsActive = false;
                 activeConversation = null;
-                updateVoiceIndicator("disconnected");
-                appendMessage("Disconnected from ElevenLabs Voice Agent.", "system");
+                if (wasActive) {
+                    updateVoiceIndicator("disconnected");
+                    appendMessage("Disconnected from ElevenLabs Voice Agent.", "system");
+                }
             },
             onMessage: ({ message, source }) => {
                 console.log(`Message from ${source}: ${message}`);
@@ -328,20 +334,29 @@ async function startElevenLabsSession() {
             },
             onError: (error) => {
                 console.error("ElevenLabs error:", error);
-                fallbackToLocalAssistant();
+                fallbackToLocalAssistant(error.message || error);
             }
         });
     } catch (err) {
         console.error("Failed to start ElevenLabs session:", err);
-        fallbackToLocalAssistant();
+        fallbackToLocalAssistant(err.message || err);
     }
 }
 
-function fallbackToLocalAssistant() {
+function fallbackToLocalAssistant(errorReason = "") {
+    if (isLocalFallbackActive) return;
+    isLocalFallbackActive = true;
+    
     isElevenLabsActive = false;
     activeConversation = null;
     updateVoiceIndicator("local_standby");
-    appendMessage("Using Local Assistant fallback (offline mode).", "system");
+    
+    let msg = "Using Local Assistant fallback (offline mode).";
+    if (errorReason) {
+        let reasonStr = typeof errorReason === 'object' ? JSON.stringify(errorReason) : String(errorReason);
+        msg += ` (Reason: ${reasonStr})`;
+    }
+    appendMessage(msg, "system");
     speakAssistantResponse("Namaste! I am Mitti, your natural farming assistant. How can I help you?");
 }
 
