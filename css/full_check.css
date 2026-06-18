@@ -1,0 +1,295 @@
+
+.crop-page {
+    max-width: 1100px;
+    margin: auto;
+    position: relative;
+}
+
+/* ---------------------------------
+   PAGE HEADER
+---------------------------------- */
+.crop-page .page-header {
+    margin-bottom: 38px;
+    position: relative;
+}
+
+.crop-page .page-header h2 {
+    font-family: var(--heading-font);
+    font-size: 2.1rem;
+    letter-spacing: 1px;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 6px;
+}
+
+.crop-page .page-header h2::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 70%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+}
+
+.crop-page .page-header p {
+    opacity: 0.85;
+    max-width: 760px;
+    line-height: 1.6;
+}
+
+/* ---------------------------------
+   ACTION AREA
+---------------------------------- */
+.action-area {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+#startFullCheckBtn {
+    position: relative;
+    padding: 18px 48px;
+    font-size: 1.15rem;
+    font-family: var(--heading-font);
+    letter-spacing: 1.6px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    color: #1b1207;
+    background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.25), transparent 55%),
+        linear-gradient(135deg, var(--accent), #6b4f2a);
+    box-shadow:
+        0 14px 35px rgba(107,79,42,0.55),
+        inset 0 -4px 10px rgba(0,0,0,0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+}
+
+#startFullCheckBtn:hover {
+    transform: translateY(-4px) scale(1.04);
+    box-shadow:
+        0 26px 60px rgba(107,79,42,0.85),
+        inset 0 -4px 12px rgba(0,0,0,0.5);
+    filter: brightness(1.07);
+}
+
+#startFullCheckBtn:active {
+    transform: translateY(1px) scale(0.97);
+}
+
+#startFullCheckBtn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* ---------------------------------
+   LOADER – ANALYSIS CORE
+---------------------------------- */
+#fullLoader {
+    margin: 55px 0;
+    text-align: center;
+    position: relative;
+}
+
+#fullLoader span {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.12);
+    border-top: 3px solid var(--accent);
+    display: inline-block;
+    animation: spin 1.2s linear infinite;
+    box-shadow: 0 0 25px rgba(199,139,90,0.45);
+}
+
+#fullLoader::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 140px;
+    height: 140px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(199,139,90,0.25), transparent 65%);
+    animation: pulseGlow 2.4s infinite ease-in-out;
+}
+
+#fullLoader p {
+    margin-top: 16px;
+    font-size: 1rem;
+    opacity: 0.85;
+    letter-spacing: 0.4px;
+}
+
+/* ---------------------------------
+   RESULT AREA
+---------------------------------- */
+#fullResult {
+    margin-top: 55px;
+    animation: revealUp 0.7s ease forwards;
+}
+
+#fullResult h3 {
+    font-family: var(--heading-font);
+    letter-spacing: 1px;
+    margin-top: 35px;
+    margin-bottom: 10px;
+}
+
+/* ---------------------------------
+   DETAILS / DISEASE PANELS
+---------------------------------- */
+.crop-details {
+    margin-top: 40px;
+    padding: 28px 30px;
+    border-radius: 22px 34px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(0,0,0,0.25)), var(--card-bg);
+    border: 1px solid var(--card-border);
+    box-shadow: 0 22px 55px rgba(0,0,0,0.65), inset 0 0 25px rgba(199,139,90,0.18);
+}
+
+.crop-details h3 {
+    font-family: var(--heading-font);
+    font-size: 1.35rem;
+    margin-bottom: 12px;
+}
+
+#diseaseStatus {
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    line-height: 1.6;
+}
+
+/* Status glow */
+#diseaseStatus.healthy {
+    color: #7cff6b;
+    text-shadow: 0 0 12px rgba(124,255,107,0.45);
+}
+
+#diseaseStatus.warning {
+    color: #ffb347;
+    text-shadow: 0 0 12px rgba(255,179,71,0.45);
+}
+
+#diseaseStatus.danger {
+    color: #ff5c5c;
+    text-shadow: 0 0 12px rgba(255,92,92,0.45);
+}
+
+/* ---------------------------------
+   CAMERA PANEL
+---------------------------------- */
+.crop-details video {
+    margin-top: 14px;
+    border-radius: 20px;
+    box-shadow:
+        inset 0 0 30px rgba(0,0,0,0.8),
+        0 12px 35px rgba(0,0,0,0.6);
+}
+
+/* ---------------------------------
+   INTEL GRID (WEATHER + MARKET + SUBSIDIES)
+---------------------------------- */
+.intel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.intel-card {
+    padding: 24px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--card-border);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.intel-card h4 {
+    font-family: var(--heading-font);
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.intel-card p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-soft);
+    margin-bottom: 12px;
+}
+
+.weather-forecast {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.weather-day {
+    text-align: center;
+}
+
+.weather-day span {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-soft);
+}
+
+.weather-day i {
+    font-size: 1.4rem;
+    color: var(--accent);
+    margin: 8px 0;
+}
+
+.weather-day strong {
+    font-size: 0.9rem;
+}
+
+.market-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.market-item:last-child {
+    border-bottom: none;
+}
+
+.market-item span {
+    font-weight: 500;
+}
+
+.market-item strong {
+    color: #7cff6b;
+}
+
+.subsidy-item {
+    margin-bottom: 12px;
+}
+
+.subsidy-item:last-child {
+    margin-bottom: 0;
+}
+
+.subsidy-item strong {
+    color: var(--text-main);
+    display: block;
+}
+
+.subsidy-item span {
+    font-size: 0.85rem;
+    color: var(--text-soft);
+}
+
+.hidden {
+    display: none;
+}

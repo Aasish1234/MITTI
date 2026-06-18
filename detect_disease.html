@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MITTI – Disease Diagnostic Scanner</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/disease.css">
+    
+    <!-- FontAwesome Icons -->
+    <script src="https://kit.fontawesome.com/f077b295a0.js" crossorigin="anonymous"></script>
+</head>
+
+<body class="dark">
+
+    <div class="app">
+
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-seedling"></i>
+                <span class="logo-text">MITTI</span>
+            </div>
+
+            <nav class="menu">
+                <a href="index.html" class="menu-item">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="crop_recommend.html" class="menu-item">
+                    <i class="fa-solid fa-leaf"></i>
+                    <span>Crop & Seed Recommend</span>
+                </a>
+                <a href="detect_disease.html" class="menu-item active">
+                    <i class="fa-solid fa-bug-slash"></i>
+                    <span>Disease Detection</span>
+                </a>
+                <a href="full_check.html" class="menu-item">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>Full Diagnostic Check</span>
+                </a>
+                <a href="education.html" class="menu-item">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>Cropping Education</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main">
+
+            <!-- TOPBAR -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-btn" onclick="toggleSidebar()">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+
+                <div class="topbar-center">
+                    <h1>MITTI</h1>
+                    <span>Edge Computer Vision Leaf Diagnosis & Biological Pest Controls</span>
+                </div>
+
+                <div class="topbar-right">
+                    <button class="icon-btn theme-toggle" onclick="toggleTheme()">
+                        <i class="fa-solid fa-sun"></i>
+                    </button>
+                    
+                    <select id="languageSelect" class="lang-select" onchange="changeLanguage()">
+                        <option value="en">English</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                        <option value="te">తెలుగు (Telugu)</option>
+                        <option value="ta">தமிழ் (Tamil)</option>
+                        <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                    </select>
+                </div>
+            </header>
+
+            <!-- CONTENT -->
+            <section class="content">
+
+                <div class="disease-page">
+
+                    <div class="page-header">
+                        <h2>🌿 Plant Disease Scanner</h2>
+                        <p>
+                            Activate your mobile/web camera, hold the diseased leaf steady in the center of the viewport, 
+                            and Mitti will extract visual features, diagnose the threat, and prescribe biological organic sprays.
+                        </p>
+                    </div>
+
+                    <!-- CAMERA CONTROLS -->
+                    <div class="action-area">
+                        <button id="startCamBtn" onclick="startCamera()">
+                            <i class="fa-solid fa-camera"></i> Start Diagnostic Camera
+                        </button>
+                        
+                        <button id="switchCamBtn" onclick="switchCamera()">
+                            <i class="fa-solid fa-rotate"></i> Switch Lens
+                        </button>
+                        
+                        <button id="stopCamBtn" onclick="stopCamera()" disabled>
+                            Stop Stream
+                        </button>
+                    </div>
+
+                    <!-- CAMERA VIEWER -->
+                    <div class="camera-box" id="cameraBox">
+                        <video id="video" autoplay playsinline></video>
+                        <canvas id="canvas" class="hidden"></canvas>
+                    </div>
+
+                    <!-- RESULT PANEL -->
+                    <div id="diseaseResult" class="result-box hidden">
+                        <h3>Diagnosis & Treatment Report</h3>
+                        <div id="resultText">Running crop health scan…</div>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+    </div>
+
+    <!-- VOICE ASSISTANT FLOATING CHAT WIDGET -->
+    <div class="mitti-chat-widget">
+        <button class="chat-button" onclick="toggleChatWindow()" title="Talk to Mitti Assistant">
+            <i class="fa-solid fa-microphone"></i>
+        </button>
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <h4><span class="voice-status-indicator" id="voiceIndicator"></span>Mitti Voice Consultant</h4>
+                <button class="close-btn" onclick="toggleChatWindow()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message model">
+                    Ask me: <em>"How do I treat Powdery Mildew?"</em> or <em>"Remedy for Early Blight"</em>.
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Ask Mitti..." onkeydown="handleChatInput(event)">
+                <button id="micBtn" onclick="toggleVoiceListening()" title="Start Voice Input">
+                    <i class="fa-solid fa-microphone"></i>
+                </button>
+                <button onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="js/dashboard.js"></script>
+    <script src="js/disease.js"></script>
+</body>
+
+</html>

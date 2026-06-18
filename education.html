@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MITTI – Multilevel Cropping Education</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .edu-container {
+            max-width: 1000px;
+            margin: auto;
+        }
+        
+        .layer-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 40px;
+        }
+        
+        .layer-bar {
+            background: linear-gradient(135deg, rgba(199, 139, 90, 0.15), rgba(0,0,0,0.4));
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .layer-bar:hover {
+            transform: scale(1.02) translateX(10px);
+            background: linear-gradient(135deg, rgba(199, 139, 90, 0.3), rgba(199, 139, 90, 0.1));
+            box-shadow: 0 8px 25px rgba(199, 139, 90, 0.3);
+        }
+        
+        .layer-bar::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 8px;
+            background: var(--accent);
+            opacity: 0.8;
+        }
+        
+        /* Different border colors representing heights/soil depths */
+        #layer1::before { background: #81C784; } /* Canopy - green leaves */
+        #layer2::before { background: #AED581; } /* Understory - light green */
+        #layer3::before { background: #FFD54F; } /* Shrub - flowering yellow */
+        #layer4::before { background: #FF8A65; } /* Herbaceous - orange fruit */
+        #layer5::before { background: #8D6E63; } /* Rhizosphere - brown roots */
+        
+        .layer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .layer-title {
+            font-family: var(--heading-font);
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: var(--text-main);
+        }
+        
+        .layer-height {
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-weight: 500;
+        }
+        
+        .layer-body {
+            margin-top: 12px;
+            font-size: 0.95rem;
+            color: var(--text-soft);
+            line-height: 1.6;
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .layer-bar.active .layer-body {
+            display: block;
+        }
+        
+        .edu-intro {
+            margin-bottom: 30px;
+        }
+        
+        .interactive-tag {
+            background: rgba(199, 139, 90, 0.12);
+            color: var(--accent);
+            border: 1px solid rgba(199, 139, 90, 0.3);
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+    
+    <!-- FontAwesome Icons -->
+    <script src="https://kit.fontawesome.com/f077b295a0.js" crossorigin="anonymous"></script>
+</head>
+
+<body class="dark">
+
+    <div class="app">
+
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-seedling"></i>
+                <span class="logo-text">MITTI</span>
+            </div>
+
+            <nav class="menu">
+                <a href="index.html" class="menu-item">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="crop_recommend.html" class="menu-item">
+                    <i class="fa-solid fa-leaf"></i>
+                    <span>Crop & Seed Recommend</span>
+                </a>
+                <a href="detect_disease.html" class="menu-item">
+                    <i class="fa-solid fa-bug-slash"></i>
+                    <span>Disease Detection</span>
+                </a>
+                <a href="full_check.html" class="menu-item">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>Full Diagnostic Check</span>
+                </a>
+                <a href="education.html" class="menu-item active">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>Cropping Education</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main">
+
+            <!-- TOPBAR -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-btn" onclick="toggleSidebar()">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+
+                <div class="topbar-center">
+                    <h1>MITTI</h1>
+                    <span>Interactive Natural Farming Education & Multilevel Crop Ecosystems</span>
+                </div>
+
+                <div class="topbar-right">
+                    <button class="icon-btn theme-toggle" onclick="toggleTheme()">
+                        <i class="fa-solid fa-sun"></i>
+                    </button>
+                    
+                    <select id="languageSelect" class="lang-select" onchange="changeLanguage()">
+                        <option value="en">English</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                        <option value="te">తెలుగు (Telugu)</option>
+                        <option value="ta">தமிழ் (Tamil)</option>
+                        <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                    </select>
+                </div>
+            </header>
+
+            <!-- CONTENT -->
+            <section class="content">
+
+                <div class="edu-container">
+                    
+                    <div class="page-header edu-intro">
+                        <h2>📚 Multilevel Cropping Strategies</h2>
+                        <p>
+                            Natural farming models mimic native forest layers. Instead of cultivating a single crop (monoculture), 
+                            farmers stack compatible plants with different heights and root depths on the same plot. This 
+                            maximizes sunlight capture, naturally repels pests, and enriches soil organic matter.
+                        </p>
+                        <div class="interactive-tag">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>Click on any layer below to expand details about companion seeds and ecosystem benefits.</span>
+                        </div>
+                    </div>
+
+                    <!-- LAYER STACK -->
+                    <div class="layer-stack">
+                        
+                        <!-- LAYER 1 -->
+                        <div class="layer-bar" id="layer1" onclick="toggleLayer(this)">
+                            <div class="layer-header">
+                                <div class="layer-title">🌳 Layer 1: Canopy / Tall Timber</div>
+                                <div class="layer-height">Height: 30+ feet</div>
+                            </div>
+                            <div class="layer-body">
+                                <strong>Representative Crops:</strong> Coconut, Arecanut, Teak, Neem, Tamarind.
+                                <br><br>
+                                <strong>Ecological Function:</strong> Acts as the top shield. Captures intense direct sunlight, protects smaller crops from heavy wind and rain damage, and anchors the deep water table. Neem trees also act as natural pest repellents for the entire field.
+                                <br><br>
+                                <strong>Root System:</strong> Deep anchor roots that extract moisture from deep soil layers, leaving upper soil nutrients for shallower crops.
+                            </div>
+                        </div>
+
+                        <!-- LAYER 2 -->
+                        <div class="layer-bar" id="layer2" onclick="toggleLayer(this)">
+                            <div class="layer-header">
+                                <div class="layer-title">🌴 Layer 2: Understory / Medium Fruit</div>
+                                <div class="layer-height">Height: 15 - 30 feet</div>
+                            </div>
+                            <div class="layer-body">
+                                <strong>Representative Crops:</strong> Banana, Papaya, Mango, Moringa, Citrus.
+                                <br><br>
+                                <strong>Ecological Function:</strong> Thrives in filtered sunlight. Banana plants store vast quantities of water in their pseudostems, cooling the microclimate. Moringa leaves decompose into high-nitrogen organic mulch.
+                                <br><br>
+                                <strong>Root System:</strong> Lateral branching roots in the mid-soil layers.
+                            </div>
+                        </div>
+
+                        <!-- LAYER 3 -->
+                        <div class="layer-bar" id="layer3" onclick="toggleLayer(this)">
+                            <div class="layer-header">
+                                <div class="layer-title">🌿 Layer 3: Shrub & Bush</div>
+                                <div class="layer-height">Height: 6 - 15 feet</div>
+                            </div>
+                            <div class="layer-body">
+                                <strong>Representative Crops:</strong> Coffee, Cocoa, Black Pepper (climber on arecanut), Lemon, Curry Leaves.
+                                <br><br>
+                                <strong>Ecological Function:</strong> Partial shade-loving crops. They populate the middle air space. Black pepper vines use the trunks of canopy trees (Arecanut/Coconut) as supports, saving space.
+                                <br><br>
+                                <strong>Root System:</strong> Medium density fibrous roots.
+                            </div>
+                        </div>
+
+                        <!-- LAYER 4 -->
+                        <div class="layer-bar" id="layer4" onclick="toggleLayer(this)">
+                            <div class="layer-header">
+                                <div class="layer-title">🌱 Layer 4: Ground Cover & Herbaceous</div>
+                                <div class="layer-height">Height: 1 - 6 feet</div>
+                            </div>
+                            <div class="layer-body">
+                                <strong>Representative Crops:</strong> Chili, Cowpea (legume), Maize, Marigold, Beans, Leafy Greens.
+                                <br><br>
+                                <strong>Ecological Function:</strong> Cover crops protect the soil from direct baking by the sun, reducing water evaporation by 60%. Legumes (cowpea, beans) fix atmospheric nitrogen into the soil. Marigolds act as trap crops, attracting pests away from cash crops.
+                                <br><br>
+                                <strong>Root System:</strong> Shallow fibrous root networks.
+                            </div>
+                        </div>
+
+                        <!-- LAYER 5 -->
+                        <div class="layer-bar" id="layer5" onclick="toggleLayer(this)">
+                            <div class="layer-header">
+                                <div class="layer-title">🥔 Layer 5: Rhizosphere / Root Zone</div>
+                                <div class="layer-height">Depth: Below ground</div>
+                            </div>
+                            <div class="layer-body">
+                                <strong>Representative Crops:</strong> Turmeric, Ginger, Sweet Potato, Cassava, Garlic.
+                                <br><br>
+                                <strong>Ecological Function:</strong> Underground storage rhizomes. They loosen soil density naturally. Garlic acts as a soil-borne fungicide and nematocide. Turmeric and ginger have high market value and require dark, moist soil under the canopy shade.
+                                <br><br>
+                                <strong>Root System:</strong> Dense storage tubers feeding off the rich upper humus layer.
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+        </div>
+    </div>
+
+    <!-- VOICE ASSISTANT FLOATING CHAT WIDGET -->
+    <div class="mitti-chat-widget">
+        <button class="chat-button" onclick="toggleChatWindow()" title="Talk to Mitti Assistant">
+            <i class="fa-solid fa-microphone"></i>
+        </button>
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <h4><span class="voice-status-indicator" id="voiceIndicator"></span>Mitti Voice Consultant</h4>
+                <button class="close-btn" onclick="toggleChatWindow()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message model">
+                    Ask me: <em>"Explain the five-layer system"</em> or <em>"What crop fixes nitrogen?"</em>.
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Ask Mitti..." onkeydown="handleChatInput(event)">
+                <button id="micBtn" onclick="toggleVoiceListening()" title="Start Voice Input">
+                    <i class="fa-solid fa-microphone"></i>
+                </button>
+                <button onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+    <script>
+        function toggleLayer(element) {
+            const isActive = element.classList.contains('active');
+            
+            // Close all layers first
+            document.querySelectorAll('.layer-bar').forEach(bar => {
+                bar.classList.remove('active');
+            });
+            
+            // Toggle clicked layer
+            if (!isActive) {
+                element.classList.add('active');
+            }
+        }
+    </script>
+</body>
+
+</html>

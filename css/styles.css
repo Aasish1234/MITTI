@@ -1,0 +1,637 @@
+/* ===================== ROOT & TYPOGRAPHY ===================== */
+:root {
+    --heading-font: 'Cinzel', serif;
+    --body-font: 'Segoe UI', sans-serif;
+}
+
+* {
+    font-family: var(--body-font);
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===================== THEMES ===================== */
+body.light {
+    --bg-main: radial-gradient(circle at top, #f6efe8, #e6d8c8);
+    --bg-sidebar: linear-gradient(180deg, #8b6b4f, #6f543f);
+    --bg-topbar: linear-gradient(90deg, #9a7758, #7b5a3c);
+    --text-main: #2f1f14;
+    --text-soft: #4a3626;
+    --accent: #a66a3f;
+    --card-bg: rgba(255, 245, 235, 0.78);
+    --card-border: rgba(0, 0, 0, 0.12);
+}
+
+body.dark {
+    --bg-main: radial-gradient(circle at top, #2a1c14, #120b07);
+    --bg-sidebar: linear-gradient(180deg, #3a2416, #1e120a);
+    --bg-topbar: linear-gradient(90deg, #422918, #2a1a10);
+    --text-main: #f1e6db;
+    --text-soft: #d3c1ae;
+    --accent: #c78b5a;
+    --card-bg: rgba(50, 30, 18, 0.72);
+    --card-border: rgba(199, 139, 90, 0.28);
+}
+
+/* ===================== BACKGROUND AMBIENCE ===================== */
+body {
+    background: var(--bg-main);
+    color: var(--text-main);
+    height: 100vh;
+    overflow: hidden;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(circle at 15% 25%, rgba(199,139,90,0.08), transparent 45%),
+        radial-gradient(circle at 85% 75%, rgba(124,255,107,0.05), transparent 50%);
+    animation: soilPulse 18s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes soilPulse {
+    from { transform: scale(1); opacity: 0.6; }
+    to   { transform: scale(1.14); opacity: 0.9; }
+}
+
+/* ===================== APP LAYOUT ===================== */
+.app {
+    display: flex;
+    height: 100vh;
+    position: relative;
+    z-index: 1;
+}
+
+/* ===================== SIDEBAR ===================== */
+.sidebar {
+    width: 250px;
+    background: var(--bg-sidebar);
+    transition: width 0.3s ease;
+    overflow: hidden;
+    border-top-right-radius: 42px;
+    border-bottom-right-radius: 42px;
+    box-shadow: 10px 0 40px rgba(0,0,0,0.65);
+}
+
+.sidebar.collapsed {
+    width: 70px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 22px;
+    font-size: 1.6rem;
+}
+
+.logo-text {
+    font-family: var(--heading-font);
+    letter-spacing: 3px;
+}
+
+.logo i {
+    color: var(--accent);
+}
+
+.sidebar.collapsed .logo-text {
+    display: none;
+}
+
+/* ===================== MENU ===================== */
+.menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 22px;
+    color: var(--text-soft);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.menu-item span {
+    letter-spacing: 1px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.sidebar.collapsed .menu-item span {
+    display: none;
+}
+
+.menu-item:hover, .menu-item.active {
+    background: rgba(199, 139, 90, 0.18);
+    padding-left: 30px;
+    color: var(--text-main);
+}
+
+.sidebar.collapsed .menu-item:hover, .sidebar.collapsed .menu-item.active {
+    padding-left: 22px;
+}
+
+/* Root growth accent */
+.menu-item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 4px;
+    height: 0;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: height 0.3s ease, top 0.3s ease;
+}
+
+.menu-item:hover::before, .menu-item.active::before {
+    height: 70%;
+    top: 15%;
+}
+
+/* ===================== MAIN ===================== */
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    animation: fadeSlideIn 0.8s ease-out;
+}
+
+@keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===================== TOPBAR ===================== */
+.topbar {
+    background: var(--bg-topbar);
+    padding: 12px 20px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.75);
+    z-index: 10;
+}
+
+.topbar-center {
+    text-align: center;
+}
+
+.topbar-center h1 {
+    font-family: var(--heading-font);
+    font-size: 1.55rem;
+    letter-spacing: 3px;
+    font-weight: 600;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.35);
+}
+
+.topbar-center span {
+    display: inline-block;
+    margin-top: 6px;
+    max-width: 720px;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    letter-spacing: 0.6px;
+    color: var(--text-soft);
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* ===================== BUTTONS & SELECTS ===================== */
+.menu-btn,
+.icon-btn {
+    background: rgba(199, 139, 90, 0.16);
+    border: 1px solid rgba(199, 139, 90, 0.35);
+    color: var(--text-main);
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.menu-btn:active,
+.icon-btn:active {
+    transform: scale(0.92);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
+}
+
+.lang-select {
+    background: rgba(50, 30, 18, 0.8);
+    color: var(--text-main);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    backdrop-filter: blur(10px);
+    outline: none;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* ===================== CONTENT ===================== */
+.content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+    position: relative;
+    z-index: 2;
+}
+
+/* ===================== DASHBOARD GRID ===================== */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
+}
+
+/* ===================== GLASS CARDS ===================== */
+.glass-card {
+    backdrop-filter: blur(18px);
+    background: var(--card-bg);
+    border-radius: 28px;
+    padding: 36px 26px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--text-main);
+    border: 1px solid var(--card-border);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.65);
+    position: relative;
+    overflow: hidden;
+    animation: floatCard 9s ease-in-out infinite;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.glass-card:nth-child(odd) { animation-delay: -4s; }
+
+@keyframes floatCard {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.glass-card i {
+    font-size: 2.8rem;
+    color: var(--accent);
+    margin-bottom: 15px;
+    animation: iconBreathe 5s ease-in-out infinite;
+}
+
+@keyframes iconBreathe {
+    0%,100% { transform: scale(1); opacity: 0.85; }
+    50% { transform: scale(1.08); opacity: 1; }
+}
+
+.glass-card h3 {
+    font-family: var(--heading-font);
+    font-size: 1.15rem;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.glass-card p {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    letter-spacing: 0.4px;
+    color: var(--text-soft);
+}
+
+.glass-card:hover {
+    transform: translateY(-14px) scale(1.04);
+    box-shadow: 0 26px 65px rgba(0,0,0,0.85);
+}
+
+/* Light sweep */
+.glass-card::after {
+    content: "";
+    position: absolute;
+    inset: -100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,0.08),
+        transparent
+    );
+}
+
+.glass-card:hover::after {
+    animation: sweep 0.9s ease;
+}
+
+@keyframes sweep {
+    to { transform: translate(200%,200%) rotate(25deg); }
+}
+
+/* ===================== GETTING STARTED ===================== */
+.getting-started {
+    margin-top: 60px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    position: relative;
+}
+
+/* Organic background glow */
+.getting-started::before {
+    content: "";
+    position: absolute;
+    inset: -20% -10%;
+    background:
+        radial-gradient(circle at 20% 10%, rgba(199,139,90,0.18), transparent 45%),
+        radial-gradient(circle at 80% 80%, rgba(124,255,107,0.10), transparent 50%);
+    z-index: -1;
+    filter: blur(40px);
+}
+
+.getting-started h2 {
+    font-family: var(--heading-font);
+    font-size: 2rem;
+    letter-spacing: 4px;
+    margin-bottom: 40px;
+    text-align: left;
+    position: relative;
+}
+
+.getting-started h2::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -14px;
+    width: 120px;
+    height: 6px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    opacity: 0.6;
+}
+
+.gs-section {
+    margin-bottom: 40px;
+    max-width: 900px;
+}
+
+.gs-section h3 {
+    font-family: var(--heading-font);
+    font-size: 1.15rem;
+    letter-spacing: 1.6px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.gs-section ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.gs-section ul li {
+    font-size: 1rem;
+    line-height: 1.8;
+    letter-spacing: 0.45px;
+    color: var(--text-soft);
+    position: relative;
+    padding-left: 22px;
+    margin-bottom: 12px;
+}
+
+.gs-section ul li::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: absolute;
+    left: 0;
+    top: 0.65em;
+    opacity: 0.7;
+}
+
+/* ===================== MODE ITEMS (FLOATING ISLANDS) ===================== */
+.mode-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 28px;
+    margin-top: 22px;
+}
+
+.mode-item {
+    background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,0,0,0.35));
+    padding: 26px 28px;
+    border-radius: 28px;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+        0 20px 45px rgba(0,0,0,0.55),
+        inset 0 0 0 1px rgba(199,139,90,0.18);
+    transform: translateY(0);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.mode-item:nth-child(1) { border-radius: 32px 32px 22px 32px; }
+.mode-item:nth-child(2) { border-radius: 32px 22px 32px 32px; }
+.mode-item:nth-child(3) { border-radius: 22px 32px 32px 32px; }
+.mode-item:nth-child(4) { border-radius: 32px 32px 32px 22px; }
+
+.mode-item:hover {
+    transform: translateY(-14px);
+    box-shadow: 0 35px 70px rgba(0,0,0,0.8);
+}
+
+.mode-item span {
+    font-size: 1.9rem;
+    display: inline-block;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 10px rgba(199,139,90,0.45));
+}
+
+.mode-item p {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    letter-spacing: 0.45px;
+    color: var(--text-soft);
+}
+
+.mode-item strong {
+    color: var(--text-main);
+    letter-spacing: 1px;
+}
+
+.gs-note {
+    margin-top: 36px;
+    padding: 18px 26px;
+    background: linear-gradient(90deg, rgba(255,180,0,0.18), rgba(255,180,0,0.05));
+    border-radius: 18px 32px 32px 18px;
+    font-size: 0.95rem;
+    letter-spacing: 0.45px;
+    color: var(--text-main);
+    box-shadow: inset 0 0 0 1px rgba(255,180,0,0.25);
+}
+
+/* ===================== FLOATING CHAT WIDGET STYLES ===================== */
+.mittie-chat-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    font-family: 'Inter', sans-serif;
+}
+
+.chat-button {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #c4916b;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-button:hover {
+    transform: scale(1.1);
+}
+
+.chat-window {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: 350px;
+    height: 500px;
+    background: #151619;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.chat-header {
+    padding: 15px;
+    background: rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-header h4 {
+    color: white;
+    font-family: var(--body-font);
+    font-weight: 600;
+}
+
+.chat-header .close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-soft);
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.message {
+    padding: 10px 15px;
+    border-radius: 15px;
+    font-size: 14px;
+    max-width: 80%;
+    line-height: 1.4;
+}
+
+.message.user {
+    background: #c4916b;
+    color: #120b07;
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+}
+
+.message.model {
+    background: rgba(255,255,255,0.05);
+    color: white;
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+}
+
+.chat-input-area {
+    padding: 15px;
+    display: flex;
+    gap: 10px;
+    background: rgba(0,0,0,0.2);
+    align-items: center;
+}
+
+.chat-input-area input {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: white;
+    outline: none;
+}
+
+.chat-input-area button {
+    background: #c4916b;
+    border: none;
+    color: white;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.chat-input-area button:hover {
+    background: #a66a3f;
+}
+
+.voice-status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #4CAF50;
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 1; }
+}

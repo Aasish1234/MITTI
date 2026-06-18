@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MITTI – Natural Farming Consultant</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- FontAwesome Icons -->
+    <script src="https://kit.fontawesome.com/f077b295a0.js" crossorigin="anonymous"></script>
+</head>
+
+<body class="dark">
+
+    <div class="app">
+
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-seedling"></i>
+                <span class="logo-text">MITTI</span>
+            </div>
+
+            <nav class="menu">
+                <a href="index.html" class="menu-item active">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="crop_recommend.html" class="menu-item">
+                    <i class="fa-solid fa-leaf"></i>
+                    <span>Crop & Seed Recommend</span>
+                </a>
+                <a href="detect_disease.html" class="menu-item">
+                    <i class="fa-solid fa-bug-slash"></i>
+                    <span>Disease Detection</span>
+                </a>
+                <a href="full_check.html" class="menu-item">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>Full Diagnostic Check</span>
+                </a>
+                <a href="education.html" class="menu-item">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>Cropping Education</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main">
+
+            <!-- TOPBAR -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-btn" onclick="toggleSidebar()">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+
+                <div class="topbar-center">
+                    <h1>MITTI</h1>
+                    <span>Voice-First Natural Farming Consultant – Organic Remedies, Subsidies & Multi-level Crop Planning</span>
+                </div>
+
+                <div class="topbar-right">
+                    <button class="icon-btn theme-toggle" onclick="toggleTheme()">
+                        <i class="fa-solid fa-sun"></i>
+                    </button>
+                    
+                    <select id="languageSelect" class="lang-select" onchange="changeLanguage()">
+                        <option value="en">English</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                        <option value="te">తెలుగు (Telugu)</option>
+                        <option value="ta">தமிழ் (Tamil)</option>
+                        <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                    </select>
+                </div>
+            </header>
+
+            <!-- CONTENT -->
+            <section class="content">
+                <div class="dashboard-grid">
+
+                    <a class="glass-card" href="crop_recommend.html">
+                        <i class="fa-solid fa-leaf"></i>
+                        <h3>Crop & Seed</h3>
+                        <p>Soil nutrient analysis, seed selection & organic rotation</p>
+                    </a>
+
+                    <a class="glass-card" href="detect_disease.html">
+                        <i class="fa-solid fa-bug-slash"></i>
+                        <h3>Disease Scanner</h3>
+                        <p>Scan crop leaf threats & get biological remedies</p>
+                    </a>
+
+                    <a class="glass-card" href="full_check.html">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <h3>Full Health Check</h3>
+                        <p>Comprehensive soil, camera diagnostics, weather & markets</p>
+                    </a>
+
+                    <a class="glass-card" href="education.html">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <h3>Farming Education</h3>
+                        <p>Learn multilevel cropping systems & biological models</p>
+                    </a>
+
+                </div>
+
+                <!-- GETTING STARTED SECTION -->
+                <div class="getting-started">
+
+                    <h2>Mitti Voice-First Portal</h2>
+
+                    <div class="gs-section">
+                        <h3>1️⃣ How to use Voice Command</h3>
+                        <ul>
+                            <li>Click the floating microphone button in the bottom right corner to activate <strong>Mitti Local Voice Assistant</strong>.</li>
+                            <li>Ask questions in natural language: <em>"Which crops are suitable for sandy soil?"</em>, <em>"How do I cure Leaf Rust naturally?"</em>, or <em>"Explain the 5-layer cropping system."</em></li>
+                            <li>You can also speak in Hindi or regional languages! Mitti will capture your speech and speak back organic remedies.</li>
+                        </ul>
+                    </div>
+
+                    <div class="gs-section">
+                        <h3>2️⃣ Select a Diagnostic Module</h3>
+                        <div class="mode-list">
+                            <div class="mode-item">
+                                <span>🌱</span>
+                                <p>
+                                    <strong>Crop & Seed Selection</strong><br>
+                                    Input soil parameters (N, P, K, pH) to find the most suitable primary crops and their multilevel companion plants.
+                                </p>
+                            </div>
+
+                            <div class="mode-item">
+                                <span>🍂</span>
+                                <p>
+                                    <strong>Natural Disease Diagnostic</strong><br>
+                                    Hold a leaf steady in front of the camera. The scanner identifies mildew, blight, or spot and gives organic spray recipes.
+                                </p>
+                            </div>
+
+                            <div class="mode-item">
+                                <span>📈</span>
+                                <p>
+                                    <strong>Weather & Market Intel</strong><br>
+                                    Check live local weather predictions, current organic market prices, and government finance subsidies for natural transition.
+                                </p>
+                            </div>
+
+                            <div class="mode-item">
+                                <span>📚</span>
+                                <p>
+                                    <strong>5-Layer Cropping Strategy</strong><br>
+                                    Learn to arrange canopy trees, medium shrubs, ground cover, and root crops together to maximize yield and soil health naturally.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gs-note">
+                        <strong>💡 Organic Advice:</strong> Transitioning from chemical farming requires building soil humus. Use mulch, cover crops, and organic bio-formulations like Jeevamrutha or neem-cake to fertilize the rhizosphere.
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+    </div>
+
+    <!-- VOICE ASSISTANT FLOATING CHAT WIDGET -->
+    <div class="mitti-chat-widget">
+        <button class="chat-button" onclick="toggleChatWindow()" title="Talk to Mitti Assistant">
+            <i class="fa-solid fa-microphone"></i>
+        </button>
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <h4><span class="voice-status-indicator" id="voiceIndicator"></span>Mitti Voice Consultant</h4>
+                <button class="close-btn" onclick="toggleChatWindow()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message model">
+                    Namaste! I am Mitti, your Natural Farming Advisor. Ask me anything about organic pest remedies, companion planting, weather, market prices, or subsidies. 
+                    <br><br>
+                    Click the mic below and try asking: 
+                    <em>"What is PKVY subsidy?"</em> or 
+                    <em>"Organic remedy for Leaf Spot"</em>.
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Type or click the microphone to speak..." onkeydown="handleChatInput(event)">
+                <button id="micBtn" onclick="toggleVoiceListening()" title="Start Voice Input">
+                    <i class="fa-solid fa-microphone"></i>
+                </button>
+                <button onclick="sendChatMessage()" title="Send text"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ElevenLabs Widget Fallback -->
+    <elevenlabs-convai agent-id="agent_2801kjjj03nmex8amm2bpyx19fqz"></elevenlabs-convai>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+
+    <!-- JS -->
+    <script src="js/dashboard.js"></script>
+</body>
+
+</html>
