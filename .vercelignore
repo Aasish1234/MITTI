@@ -1,0 +1,10 @@
+*.py
+requirements.txt
+data/
+models/
+.git
+.gitignore
+README.md
+task.md
+walkthrough.md
+implementation_plan.md

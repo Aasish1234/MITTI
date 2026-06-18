@@ -15,7 +15,7 @@ try:
     from utils import check_parameters
     from parameters import thresholds, fertilizers
 except ImportError as e:
-    print(f"❌ Critical Setup Error: Missing helper file: {e}")
+    print(f" Critical Setup Error: Missing helper file: {e}")
     sys.exit(1)
 
 # --- TFLITE (For Vision) ---
