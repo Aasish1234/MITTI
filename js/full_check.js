@@ -1,5 +1,3 @@
-
-
 let videoStream = null;
 let captureInterval = null;
 let videoDevices = [];
@@ -10,7 +8,6 @@ const canvas = document.getElementById("canvas");
 const diseaseStatus = document.getElementById("diseaseStatus");
 const cameraStatus = document.getElementById("cameraStatus");
 
-// --- 1. SOIL RECOMMENDATION DATABASE ---
 const dummyCropRecommendations = [
     { crop: "Maize (Corn)", rating: "Excellent Match (Legume Intercropped)" },
     { crop: "Chili", rating: "Good Match (Garlic Companion)" },
@@ -37,11 +34,10 @@ const dummySoilAdvice = {
     "cotton": [
         "Sowing: Draw boundary lines of Castor or Marigolds to trap bollworms.",
         "Rhizosphere: Mulch with cotton crop residues to recycle potassium.",
-        "Pest Control: Apply Dashaparni extract (10-leaf botanical formulation) if pests cross economic thresholds."
+        "Pest Control: Apply Dashaparni extract if pests cross economic thresholds."
     ]
 };
 
-// --- 2. WEATHER INTELLIGENCE CATALOG ---
 const weatherForecasts = [
     { day: "Mon", temp: "27°C", icon: "fa-cloud-sun", label: "Partly Cloudy" },
     { day: "Tue", temp: "29°C", icon: "fa-sun", label: "Sunny" },
@@ -50,7 +46,6 @@ const weatherForecasts = [
     { day: "Fri", temp: "26°C", icon: "fa-cloud", label: "Overcast" }
 ];
 
-// --- 3. MARKET & SUBSIDIES DATABASE ---
 const marketRates = [
     { crop: "Organic Basmati", price: "Rs. 85 / kg", trend: "UP (+2.3%)" },
     { crop: "Organic Sharbati Wheat", price: "Rs. 42 / kg", trend: "UP (+1.1%)" },
@@ -66,7 +61,6 @@ const financialSubsidies = [
     { title: "National Millets Mission Support", detail: "Offers free seeds mini-kits, organic certification assistance, and processing equipment subsidies up to 50%." }
 ];
 
-// --- 4. ORCHESTRATED FARM AUDIT FLOW ---
 function startFullCheck() {
     const btn = document.getElementById("startFullCheckBtn");
     const loader = document.getElementById("fullLoader");
@@ -82,7 +76,6 @@ function startFullCheck() {
     loaderText.textContent = "Querying digital sensors & analyzing soil conditions…";
 
     setTimeout(() => {
-        // Render Crop Ratings
         dummyCropRecommendations.forEach(r => {
             const row = document.createElement("tr");
             row.innerHTML = `
@@ -94,7 +87,6 @@ function startFullCheck() {
             cropTable.appendChild(row);
         });
 
-        // Populate Weather Forecast
         document.getElementById("weatherSummary").innerHTML = "<strong>Forecast:</strong> Warm and humid with light showers expected on Wednesday. Ideal time to apply biological inputs.";
         const forecastArea = document.getElementById("weatherForecast");
         forecastArea.innerHTML = "";
@@ -109,7 +101,6 @@ function startFullCheck() {
             forecastArea.appendChild(div);
         });
 
-        // Populate Market Rates
         const marketArea = document.getElementById("marketPrices");
         marketArea.innerHTML = "";
         marketRates.forEach(m => {
@@ -122,7 +113,6 @@ function startFullCheck() {
             marketArea.appendChild(div);
         });
 
-        // Populate Subsidies
         const subsidyArea = document.getElementById("subsidiesList");
         subsidyArea.innerHTML = "";
         financialSubsidies.forEach(f => {
@@ -146,7 +136,6 @@ function startFullCheck() {
     }, 1500);
 }
 
-// --- 5. CAMERA CONNECTION ---
 async function loadVideoDevices() {
     try {
         const devices = await navigator.mediaDevices.enumerateDevices();
@@ -185,7 +174,6 @@ async function startCamera() {
     } catch (err) {
         console.error(err);
         cameraStatus.textContent = "Camera access denied. Simulating leaf analysis...";
-        // Trigger simulated leaf diagnostic anyway for fallback
         setTimeout(() => {
             simulateFallbackLeafCheck();
         }, 2000);
@@ -200,11 +188,10 @@ function stopCamera() {
     clearInterval(captureInterval);
 }
 
-// --- 6. LEAF SCANNING LOOP SIMULATION ---
 const dummyDiseases = [
     { label: "Healthy Leaf", confidence: 0.94, remedy: "Healthy leaf tissue. Keep maintaining compost mulch." },
     { label: "Powdery Mildew", confidence: 0.72, remedy: "Fungal infection. Spray copper-fermented sour buttermilk." },
-    { label: "Leaf Rust", confidence: 0.81, remedy: "Fungal rust. Spray Agniastra (decoction of cow urine, ginger, garlic, chili)." }
+    { label: "Leaf Rust", confidence: 0.81, remedy: "Fungal rust. Spray Agniastra." }
 ];
 
 let frameCounter = 0;
@@ -258,7 +245,6 @@ function startSendingFrames() {
     }, 1500);
 }
 
-// --- 7. CROP DETAIL REVEAL ---
 function showFullCropDetails(cropName) {
     const box = document.getElementById("fullCropDetails");
     const title = document.getElementById("fullDetailTitle");

@@ -1,11 +1,7 @@
-
-
-// --- 1. SIDEBAR CONTROLS ---
 function toggleSidebar() {
     document.getElementById("sidebar").classList.toggle("collapsed");
 }
 
-// --- 2. THEME SWITCHER ---
 function toggleTheme() {
     const body = document.body;
     const icon = document.querySelector(".theme-toggle i");
@@ -21,7 +17,6 @@ function toggleTheme() {
     }
 }
 
-// Load Saved Theme
 window.addEventListener("DOMContentLoaded", () => {
     const savedTheme = localStorage.getItem("theme") || "dark";
     document.body.className = savedTheme;
@@ -38,7 +33,6 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// --- 3. TRANSLATION ENGINE MANIFEST ---
 const translations = {
     en: {
         title: "MITTI",
@@ -54,8 +48,8 @@ const translations = {
     },
     te: {
         title: "మిట్టి",
-        tagline: "వాయిస్-ఫస్ట్ సహజ వ్యవసాయ సలహాదారు - సేంద్రీయ నివారణలు, సబ్సిడీలు & బహుళ-స్థాయి పంట ప్రణాళిక",
-        checkBtn: "🌱 నేల పోషకాలను తనిఖీ చేయండి",
+        tagline: "వాయిస్-ఫస్ట్ సహజ వ్యవసాయ సలహాదారు - సేಂದ్రీయ నివారణలు, సబ్సిడీలు & బహుళ-స్థాయి పంట ప్రణాళిక",
+        checkBtn: "🌱 నేల పోషకాలను తనిಖీ చేయండి",
         analyzing: "నేల విశ్లేషణ మరియు పంట సిఫార్సు ప్రక్రియ జరుగుతోంది..."
     },
     ta: {
@@ -76,7 +70,6 @@ function changeLanguage() {
     const lang = document.getElementById("languageSelect").value;
     localStorage.setItem("lang", lang);
     
-    // Apply translation to main header elements if present
     const t = translations[lang] || translations.en;
     const headerTitle = document.querySelector(".topbar-center h1");
     const headerTagline = document.querySelector(".topbar-center span");
@@ -87,7 +80,6 @@ function changeLanguage() {
     if (checkBtn) checkBtn.textContent = t.checkBtn;
 }
 
-// --- 4. DUMMY SOIL NPK GENERATOR ---
 function getDummySoilAnalysis() {
     return {
         soil: {
@@ -111,13 +103,13 @@ const cropNaturalAdvice = {
     "maize (corn)": [
         "Companion Seed Selection: Intercrop with Cowpea (leguminous ground cover) and Marigold (trap crop).",
         "Ecosystem Action: Cowpea fixes nitrogen, minimizing soil fertilizer needs. Marigolds emit alpha-terthienyl, reducing root-knot nematodes.",
-        "Rhizosphere Build: Apply Jeevamrutha (liquid bio-formulation containing cow dung, urine, pulse flour, and soil humus) twice during vegetative phase.",
-        "Subsidy Benefit: Eligible for PKVY (Paramparagat Krishi Vikas Yojana) incentive of Rs. 50,000 per hectare for natural transition."
+        "Rhizosphere Build: Apply Jeevamrutha twice during vegetative phase.",
+        "Subsidy Benefit: Eligible for PKVY incentive of Rs. 50,000 per hectare for natural transition."
     ],
     "chili": [
         "Companion Seed Selection: Plant with garlic (repellent border) and intercrop with coriander.",
         "Ecosystem Action: Garlic volatile oils repel aphids, thrips, and mites. Coriander attracts beneficial predatory insects.",
-        "Organic Remedy: In case of thrip infestation, spray Agniastra (decoction of cow urine, tobacco, garlic, and green chili).",
+        "Organic Remedy: In case of thrip infestation, spray Agniastra.",
         "Subsidy Benefit: Support available under PKVY cluster funding."
     ],
     "finger millet (ragi)": [
@@ -127,14 +119,13 @@ const cropNaturalAdvice = {
         "Subsidy Benefit: Government millets promotion scheme provides seed mini-kits and free organic training."
     ],
     "cotton": [
-        "Companion Seed Selection: Grow trap crops like Okra (ladyfinger) and castor on boundaries.",
+        "Companion Seed Selection: Grow trap crops like Okra and castor on boundaries.",
         "Ecosystem Action: Castor attracts cotton bollworms, serving as a biological sink to protect cotton crops.",
         "Pest Spray: Spray Neem Seed Kernel Extract (NSKE 5%) at first sight of leaf hoppers.",
         "Subsidy Benefit: Cotton natural farming qualifies for state organic cotton cultivation bonuses."
     ]
 };
 
-// --- 5. SOIL CHECK TRIGGER ---
 function checkSoil() {
     const btn = document.getElementById("checkSoilBtn");
     const loader = document.getElementById("loader");
@@ -211,11 +202,9 @@ function showCropDetails(cropName) {
     detailsBox.scrollIntoView({ behavior: "smooth" });
 }
 
-// --- 6. LOCAL SPEECH-TO-TEXT & TEXT-TO-SPEECH VOICE ENGINE ---
 let recognition = null;
 let isVoiceListening = false;
 
-// Initialize Web Speech API
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     recognition = new SpeechRecognition();
@@ -225,14 +214,14 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
 
     recognition.onstart = () => {
         isVoiceListening = true;
-        document.getElementById("voiceIndicator").style.background = "#FF5252"; // Blink Red
+        document.getElementById("voiceIndicator").style.background = "#FF5252";
         document.getElementById("micBtn").innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
         document.getElementById("chatInput").placeholder = "Listening closely...";
     };
 
     recognition.onend = () => {
         isVoiceListening = false;
-        document.getElementById("voiceIndicator").style.background = "#4CAF50"; // Green
+        document.getElementById("voiceIndicator").style.background = "#4CAF50";
         document.getElementById("micBtn").innerHTML = '<i class="fa-solid fa-microphone"></i>';
         document.getElementById("chatInput").placeholder = "Type or click the microphone to speak...";
     };
@@ -327,11 +316,9 @@ function sendChatMessage() {
     const query = input.value.trim();
     if (!query) return;
 
-    // Render User Message
     appendMessage(query, "user");
     input.value = "";
 
-    // Search query matches
     let matchReply = "I understand you are asking about agriculture. In natural farming, we recommend biological inputs like Jeevamrutha and cover cropping. Ask me about subsidies, organic remedies, weather, market rates, or five-layer cropping for specific details!";
     
     const lowercaseQuery = query.toLowerCase();
@@ -343,7 +330,6 @@ function sendChatMessage() {
         }
     }
 
-    // Render Model Reply with small delay
     setTimeout(() => {
         appendMessage(matchReply, "model");
         speakAssistantResponse(matchReply);
@@ -359,15 +345,12 @@ function appendMessage(text, sender) {
     chatMsg.scrollTop = chatMsg.scrollHeight;
 }
 
-// Speak response using SpeechSynthesis
 function speakAssistantResponse(text) {
     if ('speechSynthesis' in window) {
-        // Stop any current speech
         window.speechSynthesis.cancel();
         
         const utterance = new SpeechSynthesisUtterance(text);
         
-        // Select matching language for voice if supported
         const selectedLang = localStorage.getItem("lang") || "en";
         if (selectedLang === "hi") utterance.lang = "hi-IN";
         else if (selectedLang === "te") utterance.lang = "te-IN";
@@ -375,7 +358,7 @@ function speakAssistantResponse(text) {
         else if (selectedLang === "kn") utterance.lang = "kn-IN";
         else utterance.lang = "en-US";
         
-        utterance.rate = 1.05; // Slightly faster for natural rhythm
+        utterance.rate = 1.05;
         utterance.pitch = 1.0;
         
         window.speechSynthesis.speak(utterance);

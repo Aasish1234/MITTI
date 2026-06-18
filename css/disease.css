@@ -1,14 +1,9 @@
-
-
 .disease-page {
     max-width: 1000px;
     margin: auto;
     position: relative;
 }
 
-/* ---------------------------------
-   HEADER
----------------------------------- */
 .page-header {
     margin-bottom: 34px;
     position: relative;
@@ -38,9 +33,6 @@
     line-height: 1.6;
 }
 
-/* ---------------------------------
-   ACTION BUTTONS
----------------------------------- */
 .action-area {
     display: flex;
     gap: 18px;
@@ -84,9 +76,6 @@
     box-shadow: none;
 }
 
-/* ---------------------------------
-   CAMERA SCANNER PORTAL
----------------------------------- */
 .camera-box {
     position: relative;
     padding: 22px;
@@ -119,7 +108,6 @@
     display: block;
 }
 
-/* Scanner glow sweep animation */
 .camera-box::after {
     content: "";
     position: absolute;
@@ -143,9 +131,6 @@
     100% { top: 5%; }
 }
 
-/* ---------------------------------
-   RESULT – DIAGNOSIS REVEAL
----------------------------------- */
 .result-box {
     margin-top: 30px;
     padding: 22px 26px;

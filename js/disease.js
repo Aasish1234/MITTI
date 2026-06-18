@@ -1,5 +1,3 @@
-
-
 let videoStream = null;
 let captureInterval = null;
 let videoDevices = [];
@@ -10,13 +8,11 @@ const canvas = document.getElementById("canvas");
 const resultBox = document.getElementById("diseaseResult");
 const resultText = document.getElementById("resultText");
 
-// --- 1. CAMERA STREAM CONNECTION ---
 async function loadVideoDevices() {
     try {
         const devices = await navigator.mediaDevices.enumerateDevices();
         videoDevices = devices.filter(d => d.kind === "videoinput");
 
-        // Prefer back/rear camera for mobile smart board usage
         const backIndex = videoDevices.findIndex(d =>
             d.label.toLowerCase().includes("back") ||
             d.label.toLowerCase().includes("rear") ||
@@ -27,7 +23,6 @@ async function loadVideoDevices() {
             currentCameraIndex = backIndex;
         }
 
-        // Hide switch button if single lens is present
         const switchBtn = document.getElementById("switchCamBtn");
         if (switchBtn && videoDevices.length < 2) {
             switchBtn.style.display = "none";
@@ -104,7 +99,6 @@ function switchCamera() {
     startCamera();
 }
 
-// --- 2. ORGANIC REMEDIES CATALOG ---
 const organicDiseases = [
     {
         name: "Healthy Leaf",
@@ -145,7 +139,6 @@ const organicDiseases = [
 
 let frameCounter = 0;
 
-// --- 3. RUN SIMULATED INFERENCE ---
 function runOrganicDiseaseAnalysis() {
     frameCounter++;
 
@@ -157,7 +150,6 @@ function runOrganicDiseaseAnalysis() {
         return { type: "processing", msg: "Running CNN classification and checking botanical database..." };
     }
 
-    // Pick a random disease diagnosis once processing finishes
     const diagnosis = organicDiseases[Math.floor(Math.random() * organicDiseases.length)];
     return { type: "result", data: diagnosis };
 }
@@ -188,7 +180,6 @@ function startSendingFrames() {
         canvas.height = video.videoHeight;
         ctx.drawImage(video, 0, 0);
 
-        // Run mock AI analysis
         const res = runOrganicDiseaseAnalysis();
 
         if (resultBox) {
@@ -199,27 +190,23 @@ function startSendingFrames() {
             const output = formatRemedyOutput(res.data);
             if (resultText) resultText.innerHTML = output;
 
-            // Voice synthesis of the result for accessibility
             const speechText = res.data.name === "Healthy Leaf" 
                 ? "Diagnosis complete. The leaf is healthy. No action needed." 
                 : `Diagnosis complete. Detected ${res.data.name} with ${res.data.severity} severity. Recommending ${res.data.remedy}.`;
             
             speakAssistantResponse(speechText);
             
-            // Draw result border
             if (res.data.name === "Healthy Leaf") {
-                resultBox.style.borderLeft = "5px solid #4CAF50"; // Green
+                resultBox.style.borderLeft = "5px solid #4CAF50";
             } else {
-                resultBox.style.borderLeft = "5px solid #FF5252"; // Red
+                resultBox.style.borderLeft = "5px solid #FF5252";
             }
 
-            // Stop camera loop as diagnosis is complete
             clearInterval(captureInterval);
             const cameraBox = document.getElementById("cameraBox");
             if (cameraBox) cameraBox.classList.remove("scanning");
 
         } else {
-            // Scanning or processing
             if (resultText) resultText.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${res.msg}`;
             if (resultBox) resultBox.style.borderLeft = "5px solid var(--accent)";
         }

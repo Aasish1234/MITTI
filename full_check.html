@@ -5,15 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MITTI – Full Diagnostic Check</title>
-    
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- CSS -->
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/full_check.css">
-    
-    <!-- FontAwesome Icons -->
     <script src="https://kit.fontawesome.com/f077b295a0.js" crossorigin="anonymous"></script>
 </head>
 
@@ -21,7 +15,6 @@
 
     <div class="app">
 
-        <!-- SIDEBAR -->
         <aside id="sidebar" class="sidebar">
             <div class="logo">
                 <i class="fa-solid fa-seedling"></i>
@@ -52,10 +45,8 @@
             </nav>
         </aside>
 
-        <!-- MAIN -->
         <div class="main">
 
-            <!-- TOPBAR -->
             <header class="topbar">
                 <div class="topbar-left">
                     <button class="menu-btn" onclick="toggleSidebar()">
@@ -83,7 +74,6 @@
                 </div>
             </header>
 
-            <!-- CONTENT -->
             <section class="content">
 
                 <div class="crop-page">
@@ -96,23 +86,19 @@
                         </p>
                     </div>
 
-                    <!-- TRIGGER ACTION -->
                     <div class="action-area">
                         <button id="startFullCheckBtn" onclick="startFullCheck()">
                             Start Full Audit
                         </button>
                     </div>
 
-                    <!-- LOADER -->
                     <div id="fullLoader" class="loader hidden">
                         <span></span>
                         <p id="loaderText">Polling sensors and analyzing conditions...</p>
                     </div>
 
-                    <!-- DIAGNOSTIC RESULTS -->
                     <div id="fullResult" class="result-area hidden">
 
-                        <!-- CROP RATING TABLE -->
                         <h3>Recommended Primary Cropping</h3>
                         <table class="crop-table">
                             <thead>
@@ -122,19 +108,15 @@
                                 </tr>
                             </thead>
                             <tbody id="fullCropTable">
-                                <!-- Filled by JS -->
                             </tbody>
                         </table>
 
-                        <!-- SUB-CROP DETAIL SHEET -->
                         <div id="fullCropDetails" class="crop-details hidden">
                             <h3 id="fullDetailTitle">Cropping Scheme Soil Guidance</h3>
                             <ul id="fullDetailList">
-                                <!-- Filled by JS -->
                             </ul>
                         </div>
 
-                        <!-- CAMERA SECTION -->
                         <div class="crop-details" style="margin-top: 30px;">
                             <h3>Crop Pathology Diagnosis</h3>
                             <div id="diseaseStatus" class="healthy" style="padding: 10px 0; font-weight: 500;">
@@ -151,31 +133,24 @@
                             </div>
                         </div>
 
-                        <!-- INTEL GRID (WEATHER + MARKET + SUBSIDIES) -->
                         <div class="intel-grid">
                             
-                            <!-- WEATHER CARD -->
                             <div class="intel-card">
                                 <h4><i class="fa-solid fa-cloud-sun"></i> Weather Intelligence</h4>
                                 <p id="weatherSummary">Loading regional climate data...</p>
                                 <div class="weather-forecast" id="weatherForecast">
-                                    <!-- Filled by JS -->
                                 </div>
                             </div>
 
-                            <!-- MARKET INTEL -->
                             <div class="intel-card">
                                 <h4><i class="fa-solid fa-sack-dollar"></i> Organic Crop Market Rates</h4>
                                 <div id="marketPrices">
-                                    <!-- Filled by JS -->
                                 </div>
                             </div>
 
-                            <!-- SUBSIDY INFO -->
                             <div class="intel-card">
                                 <h4><i class="fa-solid fa-piggy-bank"></i> Government Subsidies</h4>
                                 <div id="subsidiesList">
-                                    <!-- Filled by JS -->
                                 </div>
                             </div>
 
@@ -189,7 +164,6 @@
         </div>
     </div>
 
-    <!-- VOICE ASSISTANT FLOATING CHAT WIDGET -->
     <div class="mitti-chat-widget">
         <button class="chat-button" onclick="toggleChatWindow()" title="Talk to Mitti Assistant">
             <i class="fa-solid fa-microphone"></i>
@@ -214,7 +188,6 @@
         </div>
     </div>
 
-    <!-- JS -->
     <script src="js/dashboard.js"></script>
     <script src="js/full_check.js"></script>
 </body>

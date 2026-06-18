@@ -5,15 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MITTI – Crop & Seed Selection</title>
-    
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- CSS -->
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/recommend.css">
-    
-    <!-- FontAwesome Icons -->
     <script src="https://kit.fontawesome.com/f077b295a0.js" crossorigin="anonymous"></script>
 </head>
 
@@ -21,7 +15,6 @@
 
     <div class="app">
 
-        <!-- SIDEBAR -->
         <aside id="sidebar" class="sidebar">
             <div class="logo">
                 <i class="fa-solid fa-seedling"></i>
@@ -52,10 +45,8 @@
             </nav>
         </aside>
 
-        <!-- MAIN -->
         <div class="main">
 
-            <!-- TOPBAR -->
             <header class="topbar">
                 <div class="topbar-left">
                     <button class="menu-btn" onclick="toggleSidebar()">
@@ -83,7 +74,6 @@
                 </div>
             </header>
 
-            <!-- CONTENT -->
             <section class="content">
 
                 <div class="crop-page">
@@ -96,23 +86,19 @@
                         </p>
                     </div>
 
-                    <!-- ACTION BUTTON -->
                     <div class="action-area">
                         <button id="checkSoilBtn" onclick="checkSoil()">
                             🌱 Check Soil Nutrients
                         </button>
                     </div>
 
-                    <!-- LOADER -->
                     <div id="loader" class="loader hidden">
                         <span></span>
                         <p>Poll NPK sensor and running suitability engine...</p>
                     </div>
 
-                    <!-- RESULTS AREA -->
                     <div id="resultArea" class="result-area hidden">
 
-                        <!-- SOIL METRICS -->
                         <div id="soilSummary" class="soil-summary">
                             <h3>🧪 Soil Parameter Analysis</h3>
                             
@@ -150,7 +136,6 @@
                             </div>
                         </div>
 
-                        <!-- RECOMMENDATION TABLE -->
                         <h3>Top Suitable Natural Cropping Systems</h3>
                         <p style="font-size:0.9rem; color:var(--text-soft); margin-top:-8px; margin-bottom:15px;">
                             Click on a row to reveal detailed seed selection & subsidy support.
@@ -166,15 +151,12 @@
                                 </tr>
                             </thead>
                             <tbody id="cropTableBody">
-                                <!-- Filled by JS -->
                             </tbody>
                         </table>
 
-                        <!-- DETAILS AREA -->
                         <div id="cropDetails" class="crop-details hidden">
                             <h3 id="detailTitle">Companion Crop Details</h3>
                             <ul id="detailList">
-                                <!-- Filled by JS -->
                             </ul>
                         </div>
 
@@ -187,7 +169,6 @@
         </div>
     </div>
 
-    <!-- VOICE ASSISTANT FLOATING CHAT WIDGET -->
     <div class="mitti-chat-widget">
         <button class="chat-button" onclick="toggleChatWindow()" title="Talk to Mitti Assistant">
             <i class="fa-solid fa-microphone"></i>
@@ -212,7 +193,6 @@
         </div>
     </div>
 
-    <!-- JS -->
     <script src="js/dashboard.js"></script>
 </body>
 
