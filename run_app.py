@@ -34,6 +34,15 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 query = req_body.get('query')
                 
                 api_key = os.environ.get("GEMINI_API_KEY")
+                if not api_key and os.path.exists(".env"):
+                    try:
+                        with open(".env", "r") as f:
+                            for line in f:
+                                if line.strip().startswith("GEMINI_API_KEY="):
+                                    api_key = line.strip().split("=", 1)[1].strip()
+                                    break
+                    except Exception:
+                        pass
                 if not api_key:
                     self.send_response(500)
                     self.send_header('Content-type', 'application/json')
