@@ -627,3 +627,69 @@ body::before {
     0%, 100% { opacity: 0.2; }
     50% { opacity: 1; }
 }
+
+.icon-btn-chat {
+    background: transparent;
+    border: none;
+    color: var(--text-soft);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+    outline: none;
+}
+
+.icon-btn-chat:hover {
+    color: white;
+}
+
+.chat-settings {
+    padding: 15px;
+    background: rgba(20, 15, 10, 0.95);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    backdrop-filter: blur(10px);
+}
+
+.chat-settings h5 {
+    color: white;
+    font-family: var(--body-font);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.chat-settings p {
+    color: var(--text-soft);
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.chat-settings input {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: white;
+    font-size: 12px;
+    outline: none;
+}
+
+.chat-settings button {
+    background: #c4916b;
+    border: none;
+    color: #120b07;
+    border-radius: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.chat-settings button:hover {
+    background: #a66a3f;
+}

@@ -1,13 +1,6 @@
-import { Conversation } from "https://esm.sh/@elevenlabs/client";
-
 let recognition = null;
 let isVoiceListening = false;
-let activeConversation = null;
-let isElevenLabsActive = false;
-let isMicMuted = false;
-let isLocalFallbackActive = false;
-
-
+let isGeminiActive = false;
 
 function toggleSidebar() {
     document.getElementById("sidebar").classList.toggle("collapsed");
@@ -47,18 +40,20 @@ window.addEventListener("DOMContentLoaded", () => {
     if (chatInput) {
         chatInput.addEventListener("input", () => {
             if (chatInput.value.trim() !== "") {
-                if (isElevenLabsActive && activeConversation) {
-                    activeConversation.setVolume(0);
-                }
                 if ('speechSynthesis' in window) {
                     window.speechSynthesis.cancel();
                 }
-            } else {
-                if (isElevenLabsActive && activeConversation) {
-                    activeConversation.setVolume(1.0);
-                }
             }
         });
+    }
+
+    const apiKey = localStorage.getItem("gemini_api_key");
+    if (apiKey) {
+        isGeminiActive = true;
+        updateVoiceIndicator("standby");
+    } else {
+        isGeminiActive = false;
+        updateVoiceIndicator("local_standby");
     }
 });
 
@@ -77,8 +72,8 @@ const translations = {
     },
     te: {
         title: "మిట్టి",
-        tagline: "వాయిస్-ఫస్ట్ సహజ వ్యవసాయ సలహాదారు - సేಂದ్రీయ నివారణలు, సబ్సిడీలు & బహుళ-స్థాయి పంట ప్రణాళిక",
-        checkBtn: "🌱 నేల పోషకాలను తనిಖీ చేయండి",
+        tagline: "వాయిస్-ఫస్ట్ సహజ వ్యవసాయ సలహాదారు - సేంద్రీయ నివారణలు, సబ్సిడీలు & బహుళ-స్థాయి పంట ప్రణాళిక",
+        checkBtn: "🌱 నేల పోషకాలను తనిఖీ చేయండి",
         analyzing: "నేల విశ్లేషణ మరియు పంట సిఫార్సు ప్రక్రియ జరుగుతోంది..."
     },
     ta: {
@@ -231,8 +226,6 @@ function showCropDetails(cropName) {
     detailsBox.scrollIntoView({ behavior: "smooth" });
 }
 
-
-
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     recognition = new SpeechRecognition();
@@ -242,15 +235,17 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
 
     recognition.onstart = () => {
         isVoiceListening = true;
-        document.getElementById("voiceIndicator").style.background = "#FF5252";
-        document.getElementById("micBtn").innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
+        updateVoiceIndicator("listening");
         document.getElementById("chatInput").placeholder = "Listening closely...";
     };
 
     recognition.onend = () => {
         isVoiceListening = false;
-        document.getElementById("voiceIndicator").style.background = "#4CAF50";
-        document.getElementById("micBtn").innerHTML = '<i class="fa-solid fa-microphone"></i>';
+        if (isGeminiActive) {
+            updateVoiceIndicator("standby");
+        } else {
+            updateVoiceIndicator("local_standby");
+        }
         document.getElementById("chatInput").placeholder = "Type or click the microphone to speak...";
     };
 
@@ -266,14 +261,17 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     };
 }
 
-const agriculturalKeywords = [
-    "farming", "farm", "crop", "seed", "soil", "nutrient", "npk", "fertilizer", "pest", "remedy",
-    "disease", "mulch", "water", "irrigation", "organic", "natural", "jeevamrutha", "beejamrutha",
-    "neem", "mildew", "blight", "rust", "weather", "rain", "climate", "temperature", "subsidy",
-    "subsidies", "pkvy", "pm-kisan", "government", "finance", "price", "market", "rate", "cost",
-    "rupees", "rice", "wheat", "turmeric", "ragi", "maize", "chili", "cotton", "marigold", "cowpea",
-    "companion", "planting", "agriculture", "cultivation", "harvest", "yield", "compost", "manure",
-    "insect", "spray", "fungicide", "pkvy", "kisan"
+const agriculturalRoots = [
+    "farm", "crop", "seed", "soil", "nutri", "npk", "fertil", "pest", "remed",
+    "diseas", "mulch", "water", "irrigat", "organ", "natur", "jeevamruth", "beejamruth",
+    "neem", "mildew", "blight", "rust", "weather", "rain", "climat", "temperat", "subsid",
+    "government", "financ", "price", "market", "rate", "cost", "rupee", "rice", "wheat",
+    "turmeric", "ragi", "maize", "chili", "chilli", "cotton", "marigold", "cowpea",
+    "companion", "plant", "grow", "cultiv", "harvest", "yield", "compost", "manure",
+    "insect", "spray", "fungicid", "kisan", "pkvy", "pm-kisan", "vegetab", "fruit",
+    "tomato", "potato", "onion", "garlic", "ginger", "sugarcane", "mustard", "soybean",
+    "legume", "bean", "pea", "lentil", "gram", "flower", "tree", "garden", "herbs",
+    "dung", "urine", "vermicompost", "sow", "drought", "monsoon", "loan", "scheme"
 ];
 
 function checkGuardRail(query) {
@@ -282,82 +280,44 @@ function checkGuardRail(query) {
     
     const allowedPhrases = [
         "hello", "hi", "namaste", "hey", "good morning", "good afternoon", "good evening",
-        "who are you", "what is your name", "what can you do", "help me"
+        "who are you", "what is your name", "what can you do", "help me", "how are you"
     ];
-    if (allowedPhrases.some(phrase => lowercase === phrase || lowercase.startsWith(phrase + " "))) {
+    if (allowedPhrases.some(phrase => lowercase === phrase || lowercase.startsWith(phrase + " ") || lowercase.includes(phrase))) {
         return true;
     }
     
-    return agriculturalKeywords.some(keyword => lowercase.includes(keyword));
+    return agriculturalRoots.some(root => lowercase.includes(root));
 }
 
-async function startElevenLabsSession() {
-    try {
-        isLocalFallbackActive = false;
-        updateVoiceIndicator("connecting");
-        await navigator.mediaDevices.getUserMedia({ audio: true });
-        
-        activeConversation = await Conversation.startSession({
-            agentId: "agent_2801kjjj03nmex8amm2bpyx19fqz",
-            onConnect: ({ conversationId }) => {
-                console.log("Connected to ElevenLabs:", conversationId);
-                isElevenLabsActive = true;
-                
-                isMicMuted = true;
-                activeConversation.setMicMuted(true);
-                activeConversation.setVolume(1.0);
-                
-                updateVoiceIndicator("connected_standby");
-                appendMessage("Connected to ElevenLabs. Click microphone to speak.", "system");
-            },
-            onDisconnect: () => {
-                console.log("Disconnected from ElevenLabs");
-                const wasActive = isElevenLabsActive;
-                isElevenLabsActive = false;
-                activeConversation = null;
-                if (wasActive) {
-                    updateVoiceIndicator("disconnected");
-                    appendMessage("Disconnected from ElevenLabs Voice Agent.", "system");
-                }
-            },
-            onMessage: ({ message, source }) => {
-                console.log(`Message from ${source}: ${message}`);
-                
-                if (source === "ai") {
-                    activeConversation.setVolume(1.0);
-                    isMicMuted = true;
-                    activeConversation.setMicMuted(true);
-                    updateVoiceIndicator("connected_standby");
-                }
-                
-                appendMessage(message, source === "user" ? "user" : "model");
-            },
-            onError: (error) => {
-                console.error("ElevenLabs error:", error);
-                fallbackToLocalAssistant(error.message || error);
-            }
-        });
-    } catch (err) {
-        console.error("Failed to start ElevenLabs session:", err);
-        fallbackToLocalAssistant(err.message || err);
-    }
-}
+const systemInstruction = `You are Mitti, an expert Natural Farming Consultant. Answer only questions related to natural farming, organic remedies, companion planting, weather, market rates, and government subsidies (like PKVY, PM-Kisan). Strictly refuse to answer off-topic queries (e.g. general knowledge, programming, non-farming topics, recipes of other foods) by saying: "I can only help you with natural farming, organic remedies, companion planting, weather, market rates, and government subsidies. Please ask an agriculture-related question!". Keep your responses concise, action-oriented, and structured. Do not use markdown bold/italic formatting in a way that sounds weird when spoken.`;
 
-function fallbackToLocalAssistant(errorReason = "") {
-    if (isLocalFallbackActive) return;
-    isLocalFallbackActive = true;
-    
-    isElevenLabsActive = false;
-    activeConversation = null;
-    updateVoiceIndicator("local_standby");
-    
-    let msg = "Using Local Assistant fallback (offline mode).";
-    if (errorReason) {
-        let reasonStr = typeof errorReason === 'object' ? JSON.stringify(errorReason) : String(errorReason);
-        msg += ` (Reason: ${reasonStr})`;
+async function callGeminiAPI(query) {
+    const apiKey = localStorage.getItem("gemini_api_key");
+    if (!apiKey) {
+        throw new Error("No API Key configured.");
     }
-    appendMessage(msg, "system");
-    speakAssistantResponse("Namaste! I am Mitti, your natural farming assistant. How can I help you?");
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            contents: [{ parts: [{ text: query }] }],
+            systemInstruction: { parts: [{ text: systemInstruction }] }
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
+        return data.candidates[0].content.parts[0].text;
+    } else {
+        throw new Error("Invalid response format from Gemini API");
+    }
 }
 
 function updateVoiceIndicator(status) {
@@ -365,60 +325,37 @@ function updateVoiceIndicator(status) {
     const micBtn = document.getElementById("micBtn");
     if (!indicator) return;
     
-    if (status === "connecting") {
+    if (status === "connecting" || status === "thinking") {
         indicator.style.background = "#FFC107";
         indicator.style.display = "inline-block";
         if (micBtn) micBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-    } else if (status === "connected_live") {
+    } else if (status === "listening") {
         indicator.style.background = "#FF5252";
         indicator.style.display = "inline-block";
-        if (micBtn) micBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-    } else if (status === "connected_standby") {
-        indicator.style.background = "#4CAF50";
-        indicator.style.display = "inline-block";
         if (micBtn) micBtn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
-    } else if (status === "disconnected") {
-        indicator.style.background = "#9E9E9E";
-        indicator.style.display = "inline-block";
-        if (micBtn) micBtn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
-    } else if (status === "local_live") {
-        indicator.style.background = "#FF5252";
+    } else if (status === "standby") {
+        indicator.style.background = "#00E676";
         indicator.style.display = "inline-block";
         if (micBtn) micBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
     } else if (status === "local_standby") {
-        indicator.style.background = "#4CAF50";
+        indicator.style.background = "#81C784";
         indicator.style.display = "inline-block";
         if (micBtn) micBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
     }
 }
 
 function toggleVoiceListening() {
-    if (isElevenLabsActive && activeConversation) {
-        isMicMuted = !isMicMuted;
-        activeConversation.setMicMuted(isMicMuted);
-        
-        if (!isMicMuted) {
-            activeConversation.setVolume(0);
-            updateVoiceIndicator("connected_live");
-        } else {
-            activeConversation.setVolume(1.0);
-            updateVoiceIndicator("connected_standby");
-        }
-        
-        appendMessage(isMicMuted ? "Microphone muted." : "Microphone active. Speak now.", "system");
+    if (!recognition) {
+        alert("Browser does not support Speech Recognition.");
+        return;
+    }
+    if (isVoiceListening) {
+        stopVoiceRecognition();
     } else {
-        if (!recognition) {
-            alert("Browser does not support Speech Recognition.");
-            return;
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
         }
-        if (isVoiceListening) {
-            stopVoiceRecognition();
-        } else {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
-            startVoiceRecognition();
-        }
+        startVoiceRecognition();
     }
 }
 
@@ -431,7 +368,6 @@ function startVoiceRecognition() {
         else if (selectedLang === "kn") recognition.lang = "kn-IN";
         else recognition.lang = "en-US";
         
-        updateVoiceIndicator("local_live");
         recognition.start();
     } catch (e) {
         console.error(e);
@@ -441,25 +377,20 @@ function startVoiceRecognition() {
 function stopVoiceRecognition() {
     if (recognition) {
         recognition.stop();
-        updateVoiceIndicator("local_standby");
     }
 }
 
-async function toggleChatWindow() {
+function toggleChatWindow() {
     const win = document.getElementById("chatWindow");
     if (win.style.display === "flex") {
         win.style.display = "none";
-        if (isElevenLabsActive && activeConversation) {
-            try {
-                await activeConversation.endSession();
-            } catch (e) {
-                console.error(e);
-            }
-        }
         stopVoiceRecognition();
     } else {
         win.style.display = "flex";
-        await startElevenLabsSession();
+        const apiKey = localStorage.getItem("gemini_api_key");
+        if (!apiKey) {
+            appendMessage("Welcome! Gemini API key is missing. The chatbot is currently in Local offline mode. Open settings (gear icon) in the header to add your free Gemini key.", "system");
+        }
     }
 }
 
@@ -484,7 +415,7 @@ const voiceKnowledgeBase = [
     },
     {
         keywords: ["price", "market", "rate", "cost", "basmati", "wheat", "turmeric"],
-        reply: "Organic market rates are premium today! Organic Basmati rice is selling at 85 Rupees per kilogram, Organic wheat is at 42 Rupees per kilogram, and high-curcumin Turmeric rhizomes fetch 140 Rupees per kilogram."
+        reply: "Organic market rates are premium today! Organic Basmati rice is selling at 85 Rupees per kilogram, Organic wheat is at 42 Rupees per kilogram, and high-curcumin Turmeric rhizosphere fetches 140 Rupees per kilogram."
     },
     {
         keywords: ["weather", "rain", "temperature", "forecast", "climate"],
@@ -492,10 +423,14 @@ const voiceKnowledgeBase = [
     }
 ];
 
-function sendChatMessage() {
+async function sendChatMessage() {
     const input = document.getElementById("chatInput");
     const query = input.value.trim();
     if (!query) return;
+
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+    }
 
     if (!checkGuardRail(query)) {
         appendMessage(query, "user");
@@ -512,26 +447,61 @@ function sendChatMessage() {
     appendMessage(query, "user");
     input.value = "";
 
-    if (isElevenLabsActive && activeConversation) {
-        activeConversation.setVolume(1.0);
-        activeConversation.sendUserMessage(query);
-    } else {
-        let matchReply = "I understand you are asking about agriculture. In natural farming, we recommend biological inputs like Jeevamrutha and cover cropping. Ask me about subsidies, organic remedies, weather, market rates, or five-layer cropping for specific details!";
-        
-        const lowercaseQuery = query.toLowerCase();
-        for (const kb of voiceKnowledgeBase) {
-            const matched = kb.keywords.some(k => lowercaseQuery.includes(k));
-            if (matched) {
-                matchReply = kb.reply;
-                break;
+    try {
+        updateVoiceIndicator("thinking");
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ query })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.reply) {
+                updateVoiceIndicator("standby");
+                appendMessage(data.reply, "model");
+                speakAssistantResponse(data.reply);
+                return;
             }
         }
-
-        setTimeout(() => {
-            appendMessage(matchReply, "model");
-            speakAssistantResponse(matchReply);
-        }, 600);
+        throw new Error("Server API failed");
+    } catch (err) {
+        const apiKey = localStorage.getItem("gemini_api_key");
+        if (apiKey) {
+            try {
+                const responseText = await callGeminiAPI(query);
+                updateVoiceIndicator("standby");
+                appendMessage(responseText, "model");
+                speakAssistantResponse(responseText);
+            } catch (clientErr) {
+                updateVoiceIndicator("standby");
+                appendMessage(`AI call failed: ${clientErr.message}. Using offline consultant.`, "system");
+                executeLocalFallback(query);
+            }
+        } else {
+            executeLocalFallback(query);
+        }
     }
+}
+
+function executeLocalFallback(query) {
+    let matchReply = "I understand you are asking about agriculture. In natural farming, we recommend biological inputs like Jeevamrutha and cover cropping. Ask me about subsidies, organic remedies, weather, market rates, or five-layer cropping for specific details!";
+    
+    const lowercaseQuery = query.toLowerCase();
+    for (const kb of voiceKnowledgeBase) {
+        const matched = kb.keywords.some(k => lowercaseQuery.includes(k));
+        if (matched) {
+            matchReply = kb.reply;
+            break;
+        }
+    }
+
+    setTimeout(() => {
+        appendMessage(matchReply, "model");
+        speakAssistantResponse(matchReply);
+    }, 600);
 }
 
 function appendMessage(text, sender) {
@@ -563,7 +533,36 @@ function speakAssistantResponse(text) {
     }
 }
 
-// Bind to window object for inline HTML event handlers
+function toggleSettingsWindow() {
+    const settings = document.getElementById("chatSettings");
+    if (!settings) return;
+    if (settings.style.display === "none") {
+        settings.style.display = "block";
+        const key = localStorage.getItem("gemini_api_key") || "";
+        document.getElementById("apiKeyInput").value = key;
+    } else {
+        settings.style.display = "none";
+    }
+}
+
+function saveApiKey() {
+    const keyInput = document.getElementById("apiKeyInput");
+    if (!keyInput) return;
+    const key = keyInput.value.trim();
+    if (key) {
+        localStorage.setItem("gemini_api_key", key);
+        isGeminiActive = true;
+        updateVoiceIndicator("standby");
+        appendMessage("Gemini API Key saved successfully! AI Advisor is now active.", "system");
+    } else {
+        localStorage.removeItem("gemini_api_key");
+        isGeminiActive = false;
+        updateVoiceIndicator("local_standby");
+        appendMessage("Gemini API Key removed. Using Local fallback mode.", "system");
+    }
+    toggleSettingsWindow();
+}
+
 window.toggleSidebar = toggleSidebar;
 window.toggleTheme = toggleTheme;
 window.changeLanguage = changeLanguage;
@@ -573,3 +572,5 @@ window.toggleChatWindow = toggleChatWindow;
 window.toggleVoiceListening = toggleVoiceListening;
 window.sendChatMessage = sendChatMessage;
 window.handleChatInput = handleChatInput;
+window.toggleSettingsWindow = toggleSettingsWindow;
+window.saveApiKey = saveApiKey;

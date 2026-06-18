@@ -280,11 +280,22 @@
         <div class="chat-window" id="chatWindow">
             <div class="chat-header">
                 <h4><span class="voice-status-indicator" id="voiceIndicator"></span>Mitti Voice Consultant</h4>
-                <button class="close-btn" onclick="toggleChatWindow()"><i class="fa-solid fa-xmark"></i></button>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button class="icon-btn-chat" onclick="toggleSettingsWindow()" title="Gemini Settings"><i class="fa-solid fa-gear"></i></button>
+                    <button class="close-btn" onclick="toggleChatWindow()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+            <div class="chat-settings" id="chatSettings" style="display: none;">
+                <h5>Gemini AI Settings</h5>
+                <p>To enable the AI advisor, paste your free Gemini API Key. <a href="https://aistudio.google.com/" target="_blank" style="color: #c4916b; text-decoration: underline;">Get a free key here</a>.</p>
+                <div style="display: flex; gap: 8px; margin-top: 4px;">
+                    <input type="password" id="apiKeyInput" placeholder="Paste API Key..." style="flex: 1;">
+                    <button onclick="saveApiKey()" style="padding: 6px 12px;">Save</button>
+                </div>
             </div>
             <div class="chat-messages" id="chatMessages">
                 <div class="message model">
-                    Ask me: <em>"Explain the five-layer system"</em> or <em>"What crop fixes nitrogen?"</em>.
+                    Ask me: <em>"Explain layer 5"</em> or <em>"Explain the canopy layer"</em>.
                 </div>
             </div>
             <div class="chat-input-area">
@@ -297,7 +308,7 @@
         </div>
     </div>
 
-    <script type="module" src="js/dashboard.js"></script>
+    <script src="js/dashboard.js"></script>
     <script>
         function toggleLayer(element) {
             const isActive = element.classList.contains('active');
